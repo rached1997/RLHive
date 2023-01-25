@@ -7,6 +7,10 @@ from hive.debugger.utils import metrics
 from hive.debugger.utils.model_params_getters import get_model_layer_names, get_model_weights_and_biases
 
 
+def is_non_2d(array):
+    return len(array.shape) > 2
+
+
 class WeightsCheck(DebuggerInterface):
 
     def __init__(self, check_period):
@@ -58,3 +62,89 @@ class WeightsCheck(DebuggerInterface):
                     error_msg.append(self.main_msgs['need_init_well'].format(layer_name))
 
         return error_msg
+
+
+class OverfitWeightsCheck(DebuggerInterface):
+
+    # TODO: Fix the periodicity to make this check runs periodically
+    # TODO: Fix the name of this check: find a better idea to group weight Checks
+
+    def __init__(self, check_period):
+        super().__init__()
+        self.check_type = "OverfitWeight"
+        self.check_period = check_period
+        self.error_msg = list()
+
+    def run(self, weights):
+        weights = {k: (v, is_non_2d(v)) for k, v in weights.items()}
+        for w_name, (w_array, is_conv) in weights.items():
+            if self.check_numerical_instabilities(w_name, w_array):
+                continue
+            w_reductions = np.mean(np.abs(w_array))
+            self.check_sign(w_name, w_array, is_conv)
+            self.check_dead(w_name, w_array, is_conv)
+            self.check_divergence(w_name, w_reductions, is_conv)
+
+        return self.error_msg
+
+    def check_numerical_instabilities(self, weight_name, weight_array):
+        if self.config['numeric_ins']['disabled']:
+            return
+        if np.isinf(weight_array).any():
+            self.error_msg.append(self.main_msgs['w_inf'].format(weight_name))
+            return True
+        if np.isnan(weight_array).any():
+            self.error_msg.append(self.main_msgs['w_nan'].format(weight_name))
+            return True
+        return False
+
+    def check_sign(self, weight_name, weight_array, is_conv):
+        if self.config['neg']['disabled']:
+            return
+        neg_ratio = np.count_nonzero(weight_array < 0.) / weight_array.size
+        if neg_ratio > self.config['neg']['ratio_max_thresh']:
+            main_msg = self.main_msgs['conv_w_sign'] if is_conv else self.main_msgs['fc_w_sign']
+            self.error_msg.append(main_msg.format(weight_name, neg_ratio, self.config['neg']['ratio_max_thresh']))
+
+    def check_dead(self, weight_name, weight_array, is_conv):
+        if self.config['dead']['disabled']:
+            return
+        dead_ratio = np.count_nonzero(np.abs(weight_array) < self.config['dead']['val_min_thresh']) / weight_array.size
+        if dead_ratio > self.config['dead']['ratio_max_thresh']:
+            main_msg = self.main_msgs['conv_w_dead'] if is_conv else self.main_msgs['fc_w_dead']
+            self.error_msg.append(main_msg.format(weight_name, dead_ratio, self.config['dead']['val_min_thresh']))
+
+    def check_divergence(self, weight_name, weight_reductions, is_conv):
+        if self.config['div']['disabled']:
+            return
+        if weight_reductions[-1] > self.config['div']['mav_max_thresh']:
+            main_msg = self.main_msgs['conv_w_div_1'] if is_conv else self.main_msgs['fc_w_div_1']
+            self.error_msg.append(main_msg.format(weight_name, weight_reductions[-1],
+                                                  self.config['div']['mav_max_thresh']))
+        elif len(weight_reductions) >= self.config['div']['window_size']:
+            inc_rates = np.array(
+                [weight_reductions[-i] / weight_reductions[-i - 1] for i in range(1, self.config['div']['window_size'])])
+            if (inc_rates >= self.config['div']['inc_rate_max_thresh']).all():
+                main_msg = self.main_msgs['conv_w_div_2'] if is_conv else self.main_msgs['fc_w_div_2']
+                self.error_msg.append(main_msg.format(weight_name, max(inc_rates),
+                                                      self.config['div']['inc_rate_max_thresh']))
+
+    # def update_buffer(self, weight_name, weight_array):
+    #     self.nn_data.weights_reductions[weight_name].append(np.mean(np.abs(weight_array)))
+    #     return self.nn_data.weights_reductions[weight_name]
+    #
+    # def after_run(self, weights):
+    #     self.iter_count += 1
+    #     self.weights = {k: (v, is_non_2d(v)) for k, v in weights.items()}
+    #     print(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,", self.iter_count,
+    #           ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
+    #     for w_name, (w_array, is_conv) in self.weights.items():
+    #         if self.check_numerical_instabilities(w_name, w_array): continue
+    #         buffer_values = self.update_buffer(w_name, w_array)
+    #         if self.iter_count < self.config.start or self.iter_count % self.config.period != 0: continue
+    #         print("-----------------------------------------------------------", self.iter_count,
+    #               "-----------------------------------------------------------")
+    #
+    #         self.check_sign(w_name, w_array, is_conv)
+    #         self.check_dead(w_name, w_array, is_conv)
+    #         self.check_divergence(w_name, buffer_values, is_conv)

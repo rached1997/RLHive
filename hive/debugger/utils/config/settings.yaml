@@ -14,8 +14,31 @@ Weight:
         disabled: false
         f_test_alpha: 0.1
 
+OverfitWeight:
+    numeric_ins:
+        disabled: false
+    neg:
+        ratio_max_thresh: 0.95 # the maximum of negative weights' ratio by layer to warn the user
+    dead:
+        val_min_thresh: 0.00001 #1e-5 the value of weight below which it would consider dead
+        ratio_max_thresh: 0.95 # the maximum of dead weights' ratio by layer to consider the layer is dead
+    div:
+        window_size: 5 # it refers to the time periods for which we perform the growth scale checking
+        mav_max_thresh: 100000000 #1e8 it refers to the maximum of mean absolute value(mav) for weights to make sense.
+        inc_rate_max_thresh: 2 # it refers to the maximum of growth rate (r) to detect exponential growth tendency
+
+
 Bias:
     Period: 0
+
+OverfitBias:
+    numeric_ins:
+        disabled: false
+    div:
+        disabled: false
+        window_size: 5
+        mav_max_thresh: 100000000
+        inc_rate_max_thresh: 2
 
 Loss:
     Period: 0
