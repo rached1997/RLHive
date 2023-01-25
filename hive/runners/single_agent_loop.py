@@ -158,8 +158,7 @@ def set_up_experiment(config):
     if "debugger" in config:
         debugger_config = config["debugger"]
         # TODO: merge these two lines;
-        debugger = DebuggerFactory()
-        debugger.set_debugger(debugger_config["kwargs"]["check_type"])
+        debugger = DebuggerFactory(debugger_config["kwargs"]["check_type"])
 
     agent_fn, full_config["agent"] = agent_lib.get_agent(config["agent"], "agent")
     # TODO inject debugger in all the agents configs

@@ -322,7 +322,6 @@ class DQNAgent(Agent):
                     1 - batch["done"]
             )
 
-            number_of_actions = q_targets.size
             self.run_debugging(observations=copy.deepcopy(current_state_inputs[0].numpy()),
                                model=copy.deepcopy(self._qnet),
                                labels=copy.deepcopy(q_targets),

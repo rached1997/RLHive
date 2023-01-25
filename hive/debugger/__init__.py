@@ -1,3 +1,4 @@
+from hive.debugger.Checkers.NN_checkers.ActivationCheck import ActivationCheck
 from hive.debugger.Checkers.NN_checkers.BiasCheck import BiasCheck
 from hive.debugger.Checkers.NN_checkers.LossCheck import LossCheck
 from hive.debugger.Checkers.NN_checkers.ObservationsCheck import ObservationsCheck
@@ -18,11 +19,12 @@ from hive.utils.registry import registry
 #     },
 # )
 
-registry.register("Observations", ObservationsCheck, ObservationsCheck)
-registry.register("Weights", WeightsCheck, WeightsCheck)
+registry.register("Observation", ObservationsCheck, ObservationsCheck)
+registry.register("Weight", WeightsCheck, WeightsCheck)
 registry.register("Bias", BiasCheck, BiasCheck)
 registry.register("Loss", LossCheck, LossCheck)
 registry.register("ProperFitting", ProperFittingCheck, ProperFittingCheck)
+registry.register("Activation", ActivationCheck, ActivationCheck)
 
 
 

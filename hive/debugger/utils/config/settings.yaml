@@ -1,4 +1,4 @@
-Observations:
+Observation:
     Period: 0
     Data:
         normalized_data_mins: [0.0, -1.0]
@@ -8,7 +8,7 @@ Observations:
         labels_perp_min_thresh: 0.5
         outputs_var_coef_thresh: 0.001
 
-Weights:
+Weight:
     Period: 0
     Initial_Weight:
         disabled: false
@@ -39,6 +39,30 @@ ProperFitting:
     Instance_wise_Operation:
         sample_size: 32
         trials: 10
+
+Activation:
+        Period: 0
+        Dead:
+            act_min_thresh: 0.00001
+            act_maj_percentile: 95
+            neurons_ratio_max_thresh: 0.5
+        Saturation:
+            ro_histo_bins_count: 50
+            ro_histo_min: 0.0
+            ro_histo_max: 1.0
+            ro_max_thresh: 0.85
+            neurons_ratio_max_thresh: 0.5
+        Distribution:
+            std_acts_min_thresh: 0.5
+            std_acts_max_thresh: 2.0
+            f_test_alpha: 0.1
+        Range:
+            disabled: true
+        Output:
+            patience: 5
+        Numerical_Instability:
+            disabled: false
+
 
 
 PreCheck:

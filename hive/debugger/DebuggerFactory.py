@@ -6,12 +6,11 @@ import inspect
 
 
 def period(check_period, iter_num):
-    return ((check_period != 0) and (iter_num % check_period)) \
-           or ((check_period == 0) and (iter_num == -1))
+    return ((check_period != 0) and (iter_num % check_period)) or ((check_period == 0) and (iter_num == -1))
 
 
 class DebuggerFactory:
-    def __init__(self, app_path=None):
+    def __init__(self, config, app_path=None):
         # TODO: Clean this please
         app_path = Path.cwd() if app_path == None else app_path
         log_fpath = settings.build_log_file_path(app_path, "logger")
@@ -20,8 +19,9 @@ class DebuggerFactory:
         config_fpath = settings.load_user_config_if_exists(app_path)
         self.config = settings.Config(config_fpath).full_conf
         self.debuggers = dict()
-
         self.params = {}
+
+        self.set_debugger(config)
 
     def set_debugger(self, config):
         for debugger_config in config:
