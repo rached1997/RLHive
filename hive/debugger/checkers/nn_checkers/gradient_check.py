@@ -15,7 +15,7 @@ class GradientCheck(DebuggerInterface):
         self.check_period = check_period
         self.iter_num = -1
 
-    def run(self, observations, labels, loss):
+    def run(self, predictions, labels, loss):
         error_msgs = list()
 
         inputs = (torch.randn(self.config["sample_size"], dtype=torch.double, requires_grad=True),

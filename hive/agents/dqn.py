@@ -24,7 +24,6 @@ from hive.utils.schedule import (
     SwitchSchedule,
 )
 from hive.utils.utils import LossFn, OptimizerFn, create_folder, seeder
-import tensorflow as tf
 
 class DQNAgent(Agent):
     """An agent implementing the DQN algorithm. Uses an epsilon greedy
