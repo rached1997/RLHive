@@ -1,9 +1,8 @@
 import copy
-
 import numpy as np
 import torch.nn
 
-from hive.debugger.DebuggerInterface import DebuggerInterface
+from hive.debugger.debugger_interface import DebuggerInterface
 from hive.debugger.utils.metrics import smoothness, are_significantly_different
 from hive.debugger.utils.model_params_getters import get_loss, get_model_weights_and_biases
 

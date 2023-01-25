@@ -1,5 +1,5 @@
 import numpy as np
-from hive.debugger.DebuggerInterface import DebuggerInterface
+from hive.debugger.debugger_interface import DebuggerInterface
 
 
 class MissingResetStateCheck(DebuggerInterface):

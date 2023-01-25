@@ -14,7 +14,7 @@ from hive.agents.qnets.utils import (
     create_init_weights_fn,
 )
 from hive.debugger import DebuggerInterface
-from hive.debugger.DebuggerFactory import DebuggerFactory
+from hive.debugger.debugger_factory import DebuggerFactory
 from hive.replays import BaseReplayBuffer, CircularReplayBuffer
 from hive.utils.loggers import Logger, NullLogger
 from hive.utils.schedule import (

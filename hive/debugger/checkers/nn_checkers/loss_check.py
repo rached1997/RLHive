@@ -1,6 +1,5 @@
 import numpy as np
-from hive.debugger.DebuggerInterface import DebuggerInterface
-import tensorflow as tf
+from hive.debugger.debugger_interface import DebuggerInterface
 from hive.debugger.utils.model_params_getters import get_loss, get_model_weights_and_biases
 from hive.utils.torch_utils import numpify
 

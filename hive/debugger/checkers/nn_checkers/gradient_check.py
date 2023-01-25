@@ -1,5 +1,5 @@
 import torch
-from hive.debugger.DebuggerInterface import DebuggerInterface
+from hive.debugger.debugger_interface import DebuggerInterface
 from torch.autograd import gradcheck
 
 # gradcheck takes a tuple of tensors as input, check if your gradient
