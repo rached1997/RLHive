@@ -40,6 +40,13 @@ ProperFitting:
         sample_size: 32
         trials: 10
 
+Gradient:
+    Period: 0
+    disabled: false
+    sample_size: 3 #number of instances on which all the gradients are numerically computed for verification
+    delta: 0.0001 #(1e-4) refers to numerical gradient checking formula
+    relative_err_max_thresh: 0.01 #refers to numerical gradient checking formula
+
 
 PreCheck:
     fail_on: false
