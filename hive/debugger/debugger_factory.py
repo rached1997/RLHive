@@ -1,6 +1,5 @@
 from pathlib import Path
 from hive import debugger as debugger_lib
-from hive.debugger.utils.model_params_getters import get_model_weights_and_biases, get_model_layer_names
 from hive.debugger.utils import settings
 import inspect
 

@@ -7,7 +7,7 @@ from hive.runners.utils import Metrics
 from hive.utils import schedule
 from hive.utils.experiment import Experiment
 from hive.utils.loggers import ScheduledLogger
-from hive.debugger.DebuggerFactory import DebuggerFactory
+from hive.debugger.debugger_factory import DebuggerFactory
 
 
 class Runner(ABC):

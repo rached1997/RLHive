@@ -8,7 +8,7 @@ from hive.envs.marlgrid.ma_envs.base import MultiGridEnvHive
 
 class SwitchMultiGrid(MultiGridEnvHive):
     """
-    Checkers environment based on sunehag et al. 2017
+    checkers environment based on sunehag et al. 2017
 
     "... The map contains apples and lemons. The first player is very sensitive and scores 10 for
     the team for an apple (green square) and −10 for a lemon (orange square).

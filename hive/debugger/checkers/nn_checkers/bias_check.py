@@ -1,6 +1,6 @@
 import numpy as np
 
-from hive.debugger.DebuggerInterface import DebuggerInterface
+from hive.debugger.debugger_interface import DebuggerInterface
 from hive.debugger.utils.model_params_getters import get_model_weights_and_biases
 
 
