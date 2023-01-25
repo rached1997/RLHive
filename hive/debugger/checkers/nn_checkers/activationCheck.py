@@ -13,7 +13,6 @@ class ActivationCheck(DebuggerInterface):
         super().__init__()
         self.check_type = "Activation"
         self.check_period = check_period
-        self.iter_num = 0
 
     def set_output_metadata(self):
         self.outputs_metadata = {
@@ -78,7 +77,6 @@ class ActivationCheck(DebuggerInterface):
         if self.iter_num == 0:
             self.set_output_metadata()
         error_msg = list()
-        self.iter_num += 1
 
         self.update_outs_conds(predictions)
         # if self.iter_num % self.config.period == 0:

@@ -13,13 +13,12 @@ class WeightsCheck(DebuggerInterface):
         super().__init__()
         self.check_type = "Weight"
         self.check_period = check_period
-        self.iter_num = -1
 
     def run(self, model):
         error_msg = list()
         initial_weights, _ = get_model_weights_and_biases(model)
         layer_names = get_model_layer_names(model)
-        self.iter_num += 1
+
         for layer_name, weight_array in initial_weights.items():
             shape = weight_array.shape
             if len(shape) == 1 and shape[0] == 1:

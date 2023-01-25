@@ -5,7 +5,7 @@ import inspect
 
 
 def period(check_period, iter_num):
-    return ((check_period != 0) and (iter_num % check_period)) or ((check_period == 0) and (iter_num == -1))
+    return ((check_period != 0) and (iter_num % check_period == 0)) or ((check_period == 0) and (iter_num == 1))
 
 
 class DebuggerFactory:
@@ -19,6 +19,7 @@ class DebuggerFactory:
         self.config = settings.Config(config_fpath).full_conf
         self.debuggers = dict()
         self.params = {}
+        self.iteration_number = 0
 
         self.set_debugger(config)
 
@@ -34,7 +35,7 @@ class DebuggerFactory:
             self.params[key] = value
 
     def react(self, messages, fail_on=False):
-        if len(messages) > 0 :
+        if len(messages) > 0:
             for message in messages:
                 if fail_on:
                     self.logger.error(message)
@@ -43,10 +44,10 @@ class DebuggerFactory:
                     self.logger.warning(message)
 
     def run(self):
+        self.iteration_number += 1
         for debugger in self.debuggers.values():
-            if period(check_period=debugger.check_period, iter_num=debugger.iter_num):
+            if period(check_period=debugger.check_period, iter_num= self.iteration_number):
                 args = inspect.getfullargspec(debugger.run).args[1:]
                 kwargs = {arg: self.params[arg] for arg in args}
                 msg = debugger.run(**kwargs)
                 self.react(msg)
-

@@ -13,7 +13,6 @@ class GradientCheck(DebuggerInterface):
         super().__init__()
         self.check_type = "Gradient"
         self.check_period = check_period
-        self.iter_num = -1
 
     def run(self, predictions, labels, loss):
         error_msgs = list()

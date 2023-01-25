@@ -9,7 +9,6 @@ class ObservationsCheck(DebuggerInterface):
         super().__init__()
         self.check_type = "Observation"
         self.check_period = check_period
-        self.iter_num = -1
 
     def run(self, observations):
         error_msg = list()

@@ -10,7 +10,6 @@ class LossCheck(DebuggerInterface):
         super().__init__()
         self.check_type = "Loss"
         self.check_period = check_period
-        self.iter_num = -1
 
     def run(self, labels, predictions, loss, model):
         error_msgs = list()

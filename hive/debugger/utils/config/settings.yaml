@@ -9,7 +9,7 @@ Observation:
         outputs_var_coef_thresh: 0.001
 
 Weight:
-    Period: 0
+    Period: 2
     Initial_Weight:
         disabled: false
         f_test_alpha: 0.1

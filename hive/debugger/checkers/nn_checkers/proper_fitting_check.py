@@ -13,7 +13,6 @@ class ProperFittingCheck(DebuggerInterface):
         super().__init__()
         self.check_type = "ProperFitting"
         self.check_period = check_period
-        self.iter_num = -1
 
     def run(self, observations, labels, actions, opt, model, loss):
         def _loss_is_stable(loss_value):
