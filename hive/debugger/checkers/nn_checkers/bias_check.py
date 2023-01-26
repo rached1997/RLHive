@@ -35,16 +35,24 @@ class OverfitBiasCheck(DebuggerInterface):
         self.check_type = "OverfitBias"
         self.check_period = check_period
         self.error_msg = list()
+        self.b_reductions = dict()
 
-    def run(self, biases):
+    def run(self, model):
+        _, biases = get_model_weights_and_biases(model)
         for b_name, b_array in biases.items():
             if self.check_numerical_instabilities(b_name, b_array):
                 continue
 
-            b_reductions = np.mean(np.abs(b_array))
+            b_reductions = self.update_b_reductions(b_name, b_array)
             self.check_divergence(b_name, b_reductions)
 
         return self.error_msg
+
+    def update_b_reductions(self, bias_name, bias_array):
+        if bias_name not in self.b_reductions:
+            self.b_reductions[bias_name] = []
+        self.b_reductions[bias_name].append(np.mean(np.abs(bias_array)))
+        return self.b_reductions[bias_name]
 
     def check_numerical_instabilities(self, bias_name, bias_array):
         if self.config['numeric_ins']['disabled']:
@@ -69,27 +77,3 @@ class OverfitBiasCheck(DebuggerInterface):
             if (inc_rates >= self.config['div']['inc_rate_max_thresh']).all():
                 self.error_msg.append(self.main_msgs['b_div_2'].format(bias_name, max(inc_rates),
                                                                        self.config['div']['inc_rate_max_thresh']))
-
-    # def begin(self):
-    #     self.bias_tensors = self.nn_data.model.biases
-    #     self.iter_count = -1
-    #
-    # def before_run(self, run_context):
-    #     return SessionRunArgs(self.bias_tensors)
-    #
-    #
-    # def update_buffer(self, bias_name, bias_array):
-    #     self.nn_data.biases_reductions[bias_name].append(np.mean(np.abs(bias_array)))
-    #     return self.nn_data.biases_reductions[bias_name]
-    #
-    # def after_run(self, run_context, run_values):
-    #     self.iter_count += 1
-    #     self.biases = run_values.results
-    #     if not (self.biases): return  # no bias
-    #     for b_name, b_array in self.biases.items():
-    #         if self.check_numerical_instabilities(b_name, b_array):
-    #             continue
-    #         buffer_values = self.update_buffer(b_name, b_array)
-    #         if self.iter_count < self.config.start or self.iter_count % self.config.period != 0:
-    #             continue
-    #         self.check_divergence(b_name, buffer_values)

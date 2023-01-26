@@ -13,6 +13,10 @@ def almost_equal(value1, value2, rtol=1e-2):
         return rerr <= rtol
 
 
+def is_non_2d(array):
+    return len(array.shape) > 2
+
+
 def are_significantly_different(sample_1, sample_2, alpha=0.05):
     stat, p = mannwhitneyu(sample_1, sample_2)
     return p <= alpha

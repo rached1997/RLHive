@@ -2,13 +2,9 @@ import torch.nn
 import numpy as np
 
 from hive.debugger.debugger_interface import DebuggerInterface
-from hive.debugger.utils.metrics import almost_equal
+from hive.debugger.utils.metrics import almost_equal, is_non_2d
 from hive.debugger.utils import metrics
 from hive.debugger.utils.model_params_getters import get_model_layer_names, get_model_weights_and_biases
-
-
-def is_non_2d(array):
-    return len(array.shape) > 2
 
 
 class WeightsCheck(DebuggerInterface):
@@ -74,18 +70,26 @@ class OverfitWeightsCheck(DebuggerInterface):
         self.check_type = "OverfitWeight"
         self.check_period = check_period
         self.error_msg = list()
+        self.w_reductions = dict()
 
-    def run(self, weights):
+    def run(self, model):
+        weights, _ = get_model_weights_and_biases(model)
         weights = {k: (v, is_non_2d(v)) for k, v in weights.items()}
         for w_name, (w_array, is_conv) in weights.items():
             if self.check_numerical_instabilities(w_name, w_array):
                 continue
-            w_reductions = np.mean(np.abs(w_array))
+            w_reductions = self.update_b_reductions(w_name, w_array)
             self.check_sign(w_name, w_array, is_conv)
             self.check_dead(w_name, w_array, is_conv)
             self.check_divergence(w_name, w_reductions, is_conv)
 
         return self.error_msg
+
+    def update_b_reductions(self, weight_name, weight_array):
+        if weight_name not in self.w_reductions:
+            self.w_reductions[weight_name] = []
+        self.w_reductions[weight_name].append(np.mean(np.abs(weight_array)))
+        return self.w_reductions[weight_name]
 
     def check_numerical_instabilities(self, weight_name, weight_array):
         if self.config['numeric_ins']['disabled']:
