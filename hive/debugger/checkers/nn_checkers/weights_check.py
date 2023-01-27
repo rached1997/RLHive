@@ -133,22 +133,3 @@ class OverfitWeightsCheck(DebuggerInterface):
                 self.error_msg.append(main_msg.format(weight_name, max(inc_rates),
                                                       self.config['div']['inc_rate_max_thresh']))
 
-    # def update_buffer(self, weight_name, weight_array):
-    #     self.nn_data.weights_reductions[weight_name].append(np.mean(np.abs(weight_array)))
-    #     return self.nn_data.weights_reductions[weight_name]
-    #
-    # def after_run(self, weights):
-    #     self.iter_count += 1
-    #     self.weights = {k: (v, is_non_2d(v)) for k, v in weights.items()}
-    #     print(",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,", self.iter_count,
-    #           ",,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,")
-    #     for w_name, (w_array, is_conv) in self.weights.items():
-    #         if self.check_numerical_instabilities(w_name, w_array): continue
-    #         buffer_values = self.update_buffer(w_name, w_array)
-    #         if self.iter_count < self.config.start or self.iter_count % self.config.period != 0: continue
-    #         print("-----------------------------------------------------------", self.iter_count,
-    #               "-----------------------------------------------------------")
-    #
-    #         self.check_sign(w_name, w_array, is_conv)
-    #         self.check_dead(w_name, w_array, is_conv)
-    #         self.check_divergence(w_name, buffer_values, is_conv)

@@ -52,6 +52,24 @@ Loss:
         size_growth_iters: 5
         dev_ratio: 1.0
 
+OverfitLoss:
+    Period: 1
+    numeric_ins:
+        disabled: false
+    non_dec:
+        disabled: false
+        window_size: 5
+        decr_percentage: 0.05 # it means the loss should decrease by at least 5% of its value for each period of check
+    div:
+        disabled: false
+        incr_abs_rate_max_thresh: 2 # it means recent losses is increasing by rate of >= 2 w.r.t the minimum reached loss.
+    fluct:
+        disabled: false
+        window_size: 50
+        smoothness_ratio_min_thresh: 0.5 # it means no more than 50% ratio of the incr/decr switches
+                                         # (sign changes of derivatives) w.r.t to the estimated losses (data points)
+
+
 ProperFitting:
     Period: 0
     single_batch_size: 16
