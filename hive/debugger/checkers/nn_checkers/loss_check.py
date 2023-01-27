@@ -51,7 +51,6 @@ class OverfitLossCheck(DebuggerInterface):
 
     def run(self, labels, predictions, loss):
         loss_val = float(get_loss(predictions, labels, loss))
-        self.step_losses += [loss_val]
         if self.check_numerical_instabilities(loss_val):
             return
         losses = self.update_losses(loss_val)
@@ -92,6 +91,7 @@ class OverfitLossCheck(DebuggerInterface):
                     self.config['div']['disabled']):
                 self.error_msg.append(self.main_msgs['div_loss'].format(max(inc_rates)))
         if n_losses >= self.config['fluct']['window_size']:
+            # TODO: the smoothness function is wrong. It crushes !
             smoothness_val = smoothness(losses[-self.config['fluct']['window_size']:])
             if smoothness_val < self.config['fluct']['smoothness_ratio_min_thresh'] and not (
                     self.config['fluct']['disabled']):
