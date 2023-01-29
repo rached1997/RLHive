@@ -132,7 +132,7 @@ class ActivationCheck(DebuggerInterface):
             if iteration_number < self.config["start"] or iteration_number % self.config["Period"] != 0:
                 continue
             self.check_activations_range(acts_name, acts_buffer, error_msg)
-            if self.check_numerical_instabilities(acts_name, acts_array): continue
+            # if self.check_numerical_instabilities(acts_name, acts_array): continue
             # if self.nn_data.model.act_fn_name in ['sigmoid', 'tanh']:
             #     self.check_saturated_layers(acts_name, acts_buffer, is_conv)
             # else:
