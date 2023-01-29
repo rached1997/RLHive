@@ -47,6 +47,7 @@ def pure_f_test(data, ref_std, alpha=0.1):
     return F, F <= _F_critical(alpha)
 
 
+# TODO: this function has an error in line: "ratios = (data[1:] / data[:-1])"
 def smoothness(data):
     data_size = len(data)
     if data_size < 1:
