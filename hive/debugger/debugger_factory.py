@@ -18,8 +18,7 @@ class DebuggerFactory:
         config_fpath = settings.load_user_config_if_exists(app_path)
         self.config = settings.Config(config_fpath).full_conf
         self.debuggers = dict()
-        self.params = {}
-        self.iteration_number = 0
+        self.params = {"iteration_number": 0}
 
         self.set_debugger(config)
 
@@ -44,9 +43,9 @@ class DebuggerFactory:
                     self.logger.warning(message)
 
     def run(self):
-        self.iteration_number += 1
+        self.params["iteration_number"] += 1
         for debugger in self.debuggers.values():
-            if period(check_period=debugger.check_period, iter_num= self.iteration_number):
+            if period(check_period=debugger.check_period, iter_num=self.params["iteration_number"]):
                 args = inspect.getfullargspec(debugger.run).args[1:]
                 kwargs = {arg: self.params[arg] for arg in args}
                 msg = debugger.run(**kwargs)

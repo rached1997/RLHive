@@ -1,5 +1,7 @@
 import scipy
 import numpy as np
+import torch.nn as nn
+import re
 
 
 def add_extra_feeds(feeds, extra_feed_dict):
@@ -45,3 +47,39 @@ def is_non_2d(array):
 
 def readable(float_num):
     return round(float_num, 3)
+
+
+def is_activation_function(layer):
+    activations_functions = [nn.ELU, nn.LeakyReLU, nn.ReLU6, nn.SELU, nn.Tanh, nn.Sigmoid, nn.ReLU]
+    for act_layer in activations_functions:
+        if isinstance(layer, act_layer):
+            return True
+    return False
+
+def get_activation_max_min_bound(name):
+        name = re.sub(r'\([^()]*\)', '', name)
+        if name == 'ELU':
+            activation_max_bound = +np.inf
+            activation_min_bound = -1.0
+        elif name == 'LeakyReLU':
+            activation_max_bound = +np.inf
+            activation_min_bound = -np.inf
+        elif name == 'ReLU6':
+            activation_max_bound = 6.0
+            activation_min_bound = 0.0
+        elif name == 'SELU':
+            activation_max_bound = +np.inf
+            activation_min_bound = -np.inf
+        elif name == 'Tanh':
+            activation_max_bound = 1.0
+            activation_min_bound = -1.0
+        elif name == 'Sigmoid':
+            activation_max_bound = 1.0
+            activation_min_bound = 0.0
+        elif name == 'ReLU':
+            activation_max_bound = +np.inf
+            activation_min_bound = 0.0
+        else:
+            activation_max_bound = +np.inf
+            activation_min_bound = -np.inf
+        return activation_max_bound, activation_min_bound

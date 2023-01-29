@@ -87,7 +87,8 @@ ProperFitting:
         trials: 10
 
 Activation:
-        Period: 0
+        start: 1 #should be 10
+        Period: 1
         Dead:
             act_min_thresh: 0.00001
             act_maj_percentile: 95
@@ -103,7 +104,7 @@ Activation:
             std_acts_max_thresh: 2.0
             f_test_alpha: 0.1
         Range:
-            disabled: true
+            disabled: false
         Output:
             patience: 5
         Numerical_Instability:
