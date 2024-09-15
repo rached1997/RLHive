@@ -3,6 +3,7 @@ import copy
 
 from hive import agents as agent_lib
 from hive import envs
+from hive.debugger.debugger_factory import DebuggerFactory
 from hive.runners.base import Runner
 from hive.runners.utils import TransitionInfo, load_config
 from hive.utils import experiment, loggers, schedule, utils
@@ -13,16 +14,17 @@ class SingleAgentRunner(Runner):
     """Runner class used to implement a sinle-agent training loop."""
 
     def __init__(
-        self,
-        environment,
-        agent,
-        logger,
-        experiment_manager,
-        train_steps,
-        test_frequency,
-        test_episodes,
-        stack_size,
-        max_steps_per_episode=27000,
+            self,
+            environment,
+            agent,
+            logger,
+            debugger,  # we can remove the debugger from the class Runner if we don't need it
+            experiment_manager,
+            train_steps,
+            test_frequency,
+            test_episodes,
+            stack_size,
+            max_steps_per_episode=27000,
     ):
         """Initializes the Runner object.
 
@@ -46,6 +48,7 @@ class SingleAgentRunner(Runner):
             environment,
             agent,
             logger,
+            debugger,
             experiment_manager,
             train_steps,
             test_frequency,
@@ -149,12 +152,22 @@ def set_up_experiment(config):
     logger_fn, full_config["loggers"] = loggers.get_logger(logger_config, "loggers")
     logger = logger_fn()
 
+    # Set up debugger
+    # TODO: revise this !!
+    debugger = None
+    if "debugger" in config:
+        debugger_config = config["debugger"]
+        # TODO: merge these two lines;
+        debugger = DebuggerFactory(debugger_config["kwargs"]["check_type"])
+
     agent_fn, full_config["agent"] = agent_lib.get_agent(config["agent"], "agent")
+    # TODO inject debugger in all the agents configs
     agent = agent_fn(
         observation_space=env_spec.observation_space[0],
         action_space=env_spec.action_space[0],
         stack_size=config.get("stack_size", 1),
         logger=logger,
+        debugger=debugger
     )
 
     # Set up experiment manager
@@ -164,6 +177,8 @@ def set_up_experiment(config):
     experiment_manager = experiment.Experiment(
         config["run_name"], config["save_dir"], saving_schedule_fn()
     )
+    # experiment_manager is used to save various components (like logger, agent, ...)  in one experiment.
+    # TODO: maybe we need to add the debugger here
     experiment_manager.register_experiment(
         config=full_config,
         logger=logger,
@@ -174,6 +189,7 @@ def set_up_experiment(config):
         environment,
         agent,
         logger,
+        debugger,
         experiment_manager,
         config.get("train_steps", -1),
         config.get("test_frequency", -1),
@@ -188,22 +204,33 @@ def set_up_experiment(config):
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-c", "--config")
-    parser.add_argument("-p", "--preset-config")
-    parser.add_argument("-a", "--agent-config")
-    parser.add_argument("-e", "--env-config")
-    parser.add_argument("-l", "--logger-config")
-    args, _ = parser.parse_known_args()
-    if args.config is None and args.preset_config is None:
-        raise ValueError("Config needs to be provided")
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("-c", "--config")
+    # parser.add_argument("-p", "--preset-config")
+    # parser.add_argument("-a", "--agent-config")
+    # parser.add_argument("-e", "--env-config")
+    # parser.add_argument("-l", "--logger-config")
+    # args, _ = parser.parse_known_args()
+    # if args.config is None and args.preset_config is None:
+    #     raise ValueError("Config needs to be provided")
+    # config = load_config(
+    #     args.config,
+    #     args.preset_config,
+    #     args.agent_config,
+    #     args.env_config,
+    #     args.logger_config,
+    # )
+
+    config = "../configs/atari/dqn_VR.yml"
     config = load_config(
-        args.config,
-        args.preset_config,
-        args.agent_config,
-        args.env_config,
-        args.logger_config,
+        config=config,
+        preset_config=None,
+        agent_config=None,
+        env_config=None,
+        logger_config=None,
+        debugger_config=None
     )
+
     runner = set_up_experiment(config)
     runner.run_training()
 
